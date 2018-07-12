@@ -1,0 +1,258 @@
+options:
+	p: &8[&3Xeon&8]
+
+on join:
+	if {rank::%player%} is not set:
+		set {rank::%player%} to "member"
+	else if {rank::%player%} is "owner":
+		set player's display name to "&4&l&n%player's name%"
+	else if {rank::%player%} is "admin":
+		set player's display name to "&4&l%player's name%"
+	else if {rank::%player%} is "sr.moderator":
+		set player's display name to "&4%player's name%"
+	else if {rank::%player%} is "developer":
+		set player's display name to "&6&l%player's name%"
+	else if {rank::%player%} is "trial-sr.moderator":
+		set player's display name to "&4TRIAL-%player's name%"
+	else if {rank::%player%} is "mapmaker":
+		set player's display name to "&d%player's name%"
+	else if {rank::%player%} is "moderator":
+		set player's display name to "&c%player's name%"
+	else if {rank::%player%} is "trial-moderator":
+		set player's display name to "&cTRIAL-%player's name%"
+	else if {rank::%player%} is "quantum":
+		set player's display name to "&a%player's name%"
+	else if {rank::%player%} is "platinum":
+		set player's display name to "&b%player's name%"
+	else if {rank::%player%} is "diamond":
+		set player's display name to "&3%player's name%"
+	else if {rank::%player%} is "gold":
+		set player's display name to "&6%player's name%"
+	else:
+		set player's display name to "&2%player's name%"
+
+command /rank [<offlineplayer>] [<text>]:
+	aliases: /setrank, /sr
+	trigger:
+		if arg 1 is not set:
+			if arg 2 is not set:
+				send "{@p} &fAvaible ranks&8:"
+				if {rank::%player%} is "sr.moderator":
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is "admin":
+					send "{@p} &4Sr.Moderator"
+					send "{@p} &4Trial-Sr.Moderator"
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is "owner":
+					send "{@p} &4&l&nOwner"
+					send "{@p} &4&lAdmin"
+					send "{@p} &6&lDeveloper"
+					send "{@p} &4Sr.Moderator"
+					send "{@p} &4Trial-Sr.Moderator"
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is not set:
+					if player is not op:
+						set {rank::%player%} to "member"
+						send "{@p} &fYour new rank's &2Member"
+					else:
+						set {rank::%player%} to "owner"
+						send "{@p} &fHello sir welcome to your server your rank has been set to &4&l&nOwner"
+		else if arg 1 is set:
+			if arg 2 is "set":
+				if player is op:
+					set {rank::%arg 1%} to "owner"
+					kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+					send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&l&nOwner"
+			if arg 2 is not set:
+				send "{@p} &fUsage&8: &f/rank &6<PlayerName> <Rank>"
+			else:
+				if {rank::%player%} is "owner":
+					if arg 2 is "owner":
+						set {rank::%arg 1%} to "owner"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&l&nOwner"
+					else if arg 2 is "admin":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&lAdmin"
+				if {rank::%player%} is "admin" or "owner" or "developer":
+					if arg 2 is "developer":
+						set {rank::%arg 1%} to "developer"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &6&lDeveloper"
+					if arg 2 is "sr.moderator":
+						set {rank::%arg 1%} to "sr.moderator"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4Sr.Moderator"
+					if arg 2 is "trial-sr.moderator":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4TRIAL-Sr.Moderator"
+					if arg 2 is "mapmaker":
+						set {rank::%arg 1%} to "mapmaker"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &dMap Maker"
+				if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "developer":
+					if arg 2 is "trial-sr.moderator":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4TRIAL-Sr.Moderator"
+					if arg 2 is "moderator":
+						set {rank::%arg 1%} to "moderator"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &cModerator"
+					if arg 2 is "trial-moderator":
+						set {rank::%arg 1%} to "mapmaker"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &cTrial-Moderator"
+					if arg 2 is "quantum":
+						set {rank::%arg 1%} to "quantum"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &aQuantum Donator"
+					if arg 2 is "platinum":
+						set {rank::%arg 1%} to "platinum"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &bPlatinum Donator"
+					if arg 2 is "diamond":
+						set {rank::%arg 1%} to "diamond"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &3Diamond Donator"
+					if arg 2 is "gold":
+						set {rank::%arg 1%} to "gold"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &6Gold Donator"
+					if arg 2 is "member" or "regular":
+						set {rank::%arg 1%} to "member"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &2Member"
+				else:
+					send "{@p} &cYou don't have this permission&8!"
+				
+		else:
+			send "{@p} &fUsage&8: &f/rank &6<PlayerName> <Rank>"
+				
+command /goto [<player>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+			if arg 1 is set:
+				if arg 1 is online:
+					teleport player to arg 1
+					clear player's inventory
+					give 1 stick named "&c&lGo Back" to player
+					send "{@p} &fYou have been &5teleported &fto &r%arg 1%"
+				else:
+					send "{@p} &fPlayer is not online&8."
+			else:
+				send "{@p} &fUsage: &c/goto <PlayerName>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+				
+on right click with stick:
+	#Burasi Server Selector ile dolacak
+	
+on break:
+	if {rank::%player%} is not "owner" or "admin" or "developer" or "mapmaker":
+		cancel event
+	
+on place:
+	if {rank::%player%} is not "owner" or "admin" or "developer" or "mapmaker":
+		cancel event
+command /fly:
+	aliases: /flight, /f
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum" or "platinum":
+			if {flight::%player%} is false:
+				set {flight::%player%} to true
+				allow fly for player
+				send "{@p} &fYou can flight now"
+			else if {flight::%player%} is not set:
+				set {flight::%player%} to true
+				allow fly for player
+				send "{@p} &fYou can flight now"
+			else:
+				set {flight::%player%} to false
+				disallow fly for player
+				send "{@p} &fYou can't flight since use this command"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+			
+command /report [<player>] [<text>]:
+	trigger:
+		if arg 1 is online:
+			if arg 2 is set:
+				if arg 2 is "1":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cKillAura/ForceField" to loop-players
+				else if arg 2 is "2":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cKnockback" to loop-players
+				else if arg 2 is "3":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cHarrasment" to loop-players
+				else if arg 2 is "4":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cSpam" to loop-players
+				else if arg 2 is "5":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cAdvertising" to loop-players
+				else if arg 2 is "6":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cRevealing Personal Information" to loop-players
+				else if arg 2 is "7":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cHacking" to loop-players
+				else:
+					message "{@p} &fUsage&8: &6/report <PlayerName> <Number>"
+					message "{@p} &61- &7KillAura/ForceField"
+					message "{@p} &62- &7KnockBack"
+					message "{@p} &63- &7Harassment"
+					message "{@p} &64- &7Spam"
+					message "{@p} &65- &7Adversiting"
+					message "{@p} &66- &7Revealing Personal Information"
+					message "{@p} &67- &7Hacking"
+			else:
+				message "{@p} &fUsage&8: &6/report <PlayerName> <Number>"
+				message "{@p} &61- &7KillAura/ForceField"
+				message "{@p} &62- &7KnockBack"
+				message "{@p} &63- &7Harassment"
+				message "{@p} &64- &7Spam"
+				message "{@p} &65- &7Adversiting"
+				message "{@p} &66- &7Revealing Personal Information"
+				message "{@p} &67- &7Hacking"
+				
+	
