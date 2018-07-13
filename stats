@@ -1,0 +1,45 @@
+options:
+	p: &8[&aStats&8]
+	
+on death:
+	add 1 to {stats.kills::%attacker%}
+	add 1 to {stats.deaths::%victim%} 
+	
+command /stats [<offlineplayer>]:
+	aliases: /records
+	trigger:
+		if arg 1 is not set:
+			send "{@p} %player's display name%&8'&fs stats&8;"
+			send "{@p} &fKills&8: &b%{stats.kills::%player%}%"
+			send "{@p} &fDeaths&8: &4%{stats.deaths::%player%}%"
+			if player has permission "stats.info":
+				send "{@p} &fLast Login&8: &a%{lastlogin.player::%player%}%"
+				send "{@p} &fLast LogOut&8: &c%{lastlogout.player::%player%}%"
+		else:
+			send "{@p} %arg 1's display name%&8'&fs stats&8;"
+			send "{@p} &fKills&8: &b%{stats.kills::%arg 1%}%"
+			send "{@p} &fDeaths&8: &4%{stats.deaths::%arg 1%}%"
+			if player has permission "stats.info":
+				if arg 1 is online:
+					send "{@p} &fOnline Check&8: &aONLINE"
+				else:
+					send "{@p} &fOnline Check&8: &cOFFLINE"
+				send "{@p} &fLast Login&8: &a%{lastlogin.player::%arg 1%}%"
+				send "{@p} &fLast LogOut&8: &c%{lastlogout.player::%arg 1%}%"
+				
+command /statsreset [<offlineplayer>]:
+	permission: stats.reset
+	aliases: /sr
+	trigger:
+		if arg 1 is set:
+			remove {stats.kills::%player%} from {stats.kills::%player%} 
+			remove {stats.deaths::%player%} from {stats.deaths::%player%}
+			send "{@p} &c%arg 1%&8'&fs stats succesfully resetted&8."
+		else:
+			send "{@p} &fUsage&8: &a/statsreset <PlayerName>"
+				
+on join:
+	set {lastlogin.player::%player%} to now
+	
+on quit:
+	set {lastlogout.player::%player%} to now
