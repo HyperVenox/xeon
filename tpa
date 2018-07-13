@@ -1,0 +1,24 @@
+options:
+	p: &8[&aTPA&8]
+	
+command /tpa [<player>]:
+	trigger:
+		if arg 1 is online:
+			set {tpa.request::%player%} to arg 1
+			set {tpa.inviter::%arg 1%} to player
+			send "{@p} &fYou sent teleport invation to &c%arg 1%"
+			send "{@p} &fIf you accept &c%player%&f's teleport invite Usage: &a/tpaaccept" to arg 1
+		if arg 1 is not set:
+			send "{@p} &fUsage&8: &a/tpa <PlayerName>"
+			
+command /tpaaccept:
+	trigger:
+		if {tpa.inviter::%player%} is set:
+			teleport player to {tpa.inviter::%player%}
+			clear {tpa.inviter::%player%}
+			send "{@p} &fYou have been &aaccepted %{tpa.inviter::%player%}%&f's request&8."
+		else:
+			send "{@p} &fNo body sent you teleport invite&8."
+			
+on quit:
+	clear {tpa.inviter::%player%}
