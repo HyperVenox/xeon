@@ -1,0 +1,1023 @@
+options:
+	p: &8[&3Xeon&8]
+	prefix: &8[&3Xeon&8]
+	servername: &a&lXeonPvP
+	ClickAutoBan: 25
+	afksure: 180
+	hashtag: ###
+
+variables:
+	{ffalimit} = 0
+	{uhcffalimit} = 0
+	{stats.kills::%player%} = 0
+	{stats.deaths::%player%} = 0
+	
+command /add1:
+	trigger:
+		add 1 to {ffalimit}
+	
+every 2 seconds:
+	loop all players:
+		clear {autoclickertestclicks.%loop-player%}
+		set {autoclickertest.%loop-player%} to true
+		wait 1 second
+		set {autoclickertest.%loop-player%} to false
+		if {autoclickertestclicks.%loop-player%} > 24:
+			if {makrokick.%loop-player%} is not set:
+				set {makrokick.%loop-player%} to 0
+			if {makrokick.%loop-player%} > 2:
+				execute console command "/tempban %loop-player% 1d Macro/AutoClicker"
+				delete {makrokick.%loop-player%}
+			if {makrokick.%loop-player%} < 3:
+				kick loop-player due to "{@p} &eKicked For Macro/AutoClicker"
+				execute console command "/alert %loop-player% %{autoclickertestclicks.%loop-player%}%"
+				add 1 to {makrokick.%loop-player%}	
+	
+every 1 seconds:
+	loop all players:
+		add 1 to {afpl%loop-player%}
+		wait 1 tick
+		if {afpl%loop-player%} is more than {@afksure}:
+			if {afk.%loop-player%} is true:
+				stop
+			else:
+				set {afk.%loop-player%} to true
+				kick loop-player due to "{@p} %nl%%nl% &eKicked for &4AFK&e."
+				stop
+
+on chat:
+	delete {afpl%player%}
+
+on join:
+	delete {afpl%player%}
+
+on quit:
+	delete {afpl%player%}
+
+on command: 
+	delete {afpl%player%}
+
+on any move:
+	delete {afpl%player%}
+
+on tool change:
+	delete {afpl%player%}				
+
+command /alert <text> <text>:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "developer" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			loop all players:
+				if {rank::%loop-players%} is "owner" or "admin" or "developer" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+					send "{@prefix} &4%arg 1% &8>> &8[&e%arg 2%&6cps&8]"				
+	
+command /help [<text>]:
+	aliases: /bukkit:help, /?, /bukkit:?
+	trigger:
+		if arg 1 is not set:
+			send "&8&l&m-----------&r &r{@servername} Commands&r &8&l&m-----------"
+			send "&7Type /help [page number] to view more commands!"
+			send "&6apply&8: &f/apply"
+			send "&6chatcolor&8: &f/chatcolor <ColorCode:OFF>"
+			send "&6disguise&8: &f/disguise"
+			send "&6mask&8: &f/mask <donor>"
+			send "&6silentjoin&8: &f/silentjoin"
+			send "&6fly&8: &f/fly"
+			send "&6help&8: &f/help [page]"
+			send "&6ping&8: &f/ping"
+		if arg 1 is set:
+			if arg 1 is "1":
+				send "&8&l&m-----------&r &r{@servername} Commands&r &8&l&m-----------"
+				send "&7Type /help [page number] to view more commands!"
+				send "&6apply&8: &f/apply"
+				send "&6chatcolor&8: &f/chatcolor <ColorCode:OFF>"
+				send "&6disguise&8: &f/disguise"
+				send "&6mask&8: &f/mask <donor>"
+				send "&6silentjoin&8: &f/silentjoin"
+				send "&6fly&8: &f/fly"
+				send "&6help&8: &f/help [page]"
+				send "&6ping&8: &f/ping"
+			if arg 1 is "2":
+				send "&8&l&m-----------&r &r{@servername} Commands&r &8&l&m-----------"
+				send "&7Type /help [page number] to view more commands!"
+				send "&6list&8: &f/list"
+				send "&6report&8: &f/report <playerName> <Rule {@hashtag}> <desctiption>"
+				send "&6stats&8: &f/stats <player>"
+				send "&6Xeon&8: &f/Xeon"
+		if arg 1 is not "1" or "2":
+			send "{@p} &cYou've gone too far! Try a lower page number."	
+	
+on join:
+	add 1 to {ffalimit}
+	set join message to ""
+	set {server::%player%} to "ffa"
+	clear player's inventory
+	teleport player to {spawn.ffa}
+	equip player with all iron armor
+	set slot 0 of player to iron sword named "&cSword"
+	wait 5 ticks
+	set slot 1 of player to flint and steel named "&aFNS"
+	wait 5 ticks
+	set slot 2 of player to fishing rod named "&eFishing Rod"
+	wait 5 ticks
+	set slot 3 of player to bow named "&3Bow"
+	wait 5 ticks
+	set slot 9 of player to 10 of arrow named "&7Arrow"
+	wait 5 ticks
+	set slot 8 of player to clock named "&6&lServer Selector"
+	wait 5 ticks
+	set {stats.lastlogin::%player%} to now
+	if {rank::%player%} is not set:
+		set {rank::%player%} to "member"
+	else if {rank::%player%} is "owner":
+		set player's display name to "&4&l&n%player's name%"
+	else if {rank::%player%} is "admin":
+		set player's display name to "&4&l%player's name%"
+	else if {rank::%player%} is "sr.moderator":
+		set player's display name to "&4%player's name%"
+	else if {rank::%player%} is "developer":
+		set player's display name to "&6&l%player's name%"
+	else if {rank::%player%} is "trial-sr.moderator":
+		set player's display name to "&4TRIAL-%player's name%"
+	else if {rank::%player%} is "mapmaker":
+		set player's display name to "&d%player's name%"
+	else if {rank::%player%} is "moderator":
+		set player's display name to "&c%player's name%"
+	else if {rank::%player%} is "trial-moderator":
+		set player's display name to "&cTRIAL-%player's name%"
+	else if {rank::%player%} is "quantum":
+		set player's display name to "&a%player's name%"
+	else if {rank::%player%} is "platinum":
+		set player's display name to "&b%player's name%"
+	else if {rank::%player%} is "diamond":
+		set player's display name to "&3%player's name%"
+	else if {rank::%player%} is "gold":
+		set player's display name to "&6%player's name%"
+	else:
+		set player's display name to "&2%player's name%"
+	broadcast "{@p} &r%player's display name% &fjoined to server&8."
+	
+on first join:
+	kick player due to "{@p} %nl%%nl% &fYou kicked from the server %nl%%nl% &fReason&8: &cFirst Join"
+	
+on rightclick with clock:
+	if player's held item's name is "&6&lServer Selector":
+		wait 1 tick
+		open chest with 1 rows named "&6&lServer Selector" to player
+		format slot 0 of player with blue stained glass pane to close 
+		format slot 1 of player with blue stained glass pane to close  
+		format slot 2 of player with blue stained glass pane to close  
+		format slot 3 of player with golden apple named "&6&lUHC FFA" with lore "&c%{uhcffalimit}% &eOnline player&8." to close then run [make player execute command "/server uhcffa"]
+		format slot 5 of player with fishing rod named "&c&lFFA" with lore "&c%{ffalimit}% &eOnline player&8." to close then run [make player execute command "/server ffa"]
+		format slot 4 of player with blue stained glass pane to close 
+		format slot 6 of player with blue stained glass pane to close 
+		format slot 7 of player with blue stained glass pane to close 
+		format slot 8 of player with blue stained glass pane to close		
+		
+command /rank [<offlineplayer>] [<text>]:
+	aliases: /setrank, /sr
+	trigger:
+		if arg 1 is not set:
+			if arg 2 is not set:
+				send "{@p} &fAvaible ranks&8:"
+				if {rank::%player%} is "sr.moderator":
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is "admin":
+					send "{@p} &4Sr.Moderator"
+					send "{@p} &4Trial-Sr.Moderator"
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is "owner":
+					send "{@p} &4&l&nOwner"
+					send "{@p} &4&lAdmin"
+					send "{@p} &6&lDeveloper"
+					send "{@p} &4Sr.Moderator"
+					send "{@p} &4Trial-Sr.Moderator"
+					send "{@p} &dMap-Maker"
+					send "{@p} &cModerator"
+					send "{@p} &cTrial-Moderator"
+					send "{@p} &aQuantum Donator"
+					send "{@p} &bPlatinum Donator"
+					send "{@p} &3Diamond Donator"
+					send "{@p} &6Gold Donator"
+					send "{@p} &2Regular &8or &2Member"
+				if {rank::%player%} is not set:
+					if player is not op:
+						set {rank::%player%} to "member"
+						send "{@p} &fYour new rank's &2Member"
+					else:
+						set {rank::%player%} to "owner"
+						send "{@p} &fHello sir welcome to your server your rank has been set to &4&l&nOwner"
+		else if arg 1 is set:
+			if arg 2 is "set":
+				if player is op:
+					set {rank::%arg 1%} to "owner"
+					kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+					send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&l&nOwner"
+			if arg 2 is not set:
+				send "{@p} &fUsage&8: &f/rank &6<PlayerName> <Rank>"
+			else:
+				if {rank::%player%} is "owner":
+					if arg 2 is "owner":
+						set {rank::%arg 1%} to "owner"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&l&nOwner"
+					else if arg 2 is "admin":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4&lAdmin"
+				if {rank::%player%} is "admin" or "owner" or "developer":
+					if arg 2 is "developer":
+						set {rank::%arg 1%} to "developer"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &6&lDeveloper"
+					if arg 2 is "sr.moderator":
+						set {rank::%arg 1%} to "sr.moderator"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4Sr.Moderator"
+					if arg 2 is "trial-sr.moderator":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4TRIAL-Sr.Moderator"
+					if arg 2 is "mapmaker":
+						set {rank::%arg 1%} to "mapmaker"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &dMap Maker"
+				if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "developer":
+					if arg 2 is "trial-sr.moderator":
+						set {rank::%arg 1%} to "admin"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &4TRIAL-Sr.Moderator"
+					if arg 2 is "moderator":
+						set {rank::%arg 1%} to "moderator"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &cModerator"
+					if arg 2 is "trial-moderator":
+						set {rank::%arg 1%} to "mapmaker"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &cTrial-Moderator"
+					if arg 2 is "quantum":
+						set {rank::%arg 1%} to "quantum"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &aQuantum Donator"
+					if arg 2 is "platinum":
+						set {rank::%arg 1%} to "platinum"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &bPlatinum Donator"
+					if arg 2 is "diamond":
+						set {rank::%arg 1%} to "diamond"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &3Diamond Donator"
+					if arg 2 is "gold":
+						set {rank::%arg 1%} to "gold"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &6Gold Donator"
+					if arg 2 is "member" or "regular":
+						set {rank::%arg 1%} to "member"
+						kick arg 1 due to "{@p} &fYou have been kicked from Server &fReason&8: &fRank Change" 
+						send "{@p} &r%arg 1's display name%&8'&fs new rank is &2Member"
+				else:
+					send "{@p} &cYou don't have this permission&8!"
+				
+		else:
+			send "{@p} &fUsage&8: &f/rank &6<PlayerName> <Rank>"
+				
+command /goto [<player>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+			if arg 1 is set:
+				if arg 1 is online:
+					clear {server::%player%} 
+					teleport player to arg 1
+					clear player's inventory
+					give 1 stick named "&c&lGo Back" to player
+					send "{@p} &fYou have been &5teleported &fto &r%arg 1%"
+				else:
+					send "{@p} &fPlayer is not online&8."
+			else:
+				send "{@p} &fUsage: &c/goto <PlayerName>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+				
+on right click with stick:
+	execute player command "/server ffa"
+	
+on break:
+	if {rank::%player%} is not "owner" or "admin" or "developer" or "mapmaker":
+		cancel event
+	
+on place:
+	if {rank::%player%} is not "owner" or "admin" or "developer" or "mapmaker":
+		cancel event
+		if event-block is fire:
+			uncancel event
+command /fly:
+	aliases: /flight, /f
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum" or "platinum":
+			if {flight::%player%} is false:
+				set {flight::%player%} to true
+				allow fly for player
+				send "{@p} &fYou can flight now"
+			else if {flight::%player%} is not set:
+				set {flight::%player%} to true
+				allow fly for player
+				send "{@p} &fYou can flight now"
+			else:
+				set {flight::%player%} to false
+				disallow fly for player
+				send "{@p} &fYou can't flight since use this command"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+			
+command /report [<player>] [<text>]:
+	trigger:
+		if arg 1 is online:
+			if arg 2 is set:
+				if arg 2 is "1":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cKillAura/ForceField" to loop-players
+				else if arg 2 is "2":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cKnockback" to loop-players
+				else if arg 2 is "3":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cHarrasment" to loop-players
+				else if arg 2 is "4":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cSpam" to loop-players
+				else if arg 2 is "5":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cAdvertising" to loop-players
+				else if arg 2 is "6":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cRevealing Personal Information" to loop-players
+				else if arg 2 is "7":
+					send "{@p} &fThanks for your report&8. &fOur staff will check reported player&8."
+					loop all players:
+						if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer":
+							send "{@p} &c%arg 1's name% &fhas been reported by &r%player% &cReason&8: &cHacking" to loop-players
+				else:
+					message "{@p} &fUsage&8: &6/report <PlayerName> <Number>"
+					message "{@p} &61- &7KillAura/ForceField"
+					message "{@p} &62- &7KnockBack"
+					message "{@p} &63- &7Harassment"
+					message "{@p} &64- &7Spam"
+					message "{@p} &65- &7Adversiting"
+					message "{@p} &66- &7Revealing Personal Information"
+					message "{@p} &67- &7Hacking"
+			else:
+				message "{@p} &fUsage&8: &6/report <PlayerName> <Number>"
+				message "{@p} &61- &7KillAura/ForceField"
+				message "{@p} &62- &7KnockBack"
+				message "{@p} &63- &7Harassment"
+				message "{@p} &64- &7Spam"
+				message "{@p} &65- &7Adversiting"
+				message "{@p} &66- &7Revealing Personal Information"
+				message "{@p} &67- &7Hacking"
+	
+on load:
+	set {globalmute} to true
+			
+command /globalmute [<text>]:
+	aliases: /gmu
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator":
+			if arg 1 is not set:
+				send "&cUsage : &6/gmu (on/off)"
+			if arg 1 is set:
+				if arg 1 is "on":
+					set {globalmute} to true
+					broadcast "{@p} &6&lGlobalmute &eis enable."
+				if arg 1 is "off":
+					set {globalmute} to false
+					broadcast "{@p} &6&lGlobalmute &eis disable."
+		else:
+			send "{@p} &cYou don't have this permission&8."
+		
+on chat:
+	replace all "İ﻿" or "İ" with "****" in the message
+	replace all " İ﻿" or " İ" with "****" in the message
+	replace all " İ﻿ " or " İ " with "****" in the message
+	replace all "<none>" with "" in the message
+	cancel event
+	if {globalmute} is false:
+		loop all players:
+			if {chatcolor.type::%player%} is "red":
+				send "&r%player's display name%&8: &c%message%" to loop-players
+			else if {chatcolor.type::%player%} is "blue":
+				send "&r%player's display name%&8: &b%message%" to loop-players
+			else if {chatcolor.type::%player%} is "green":
+				send "&r%player's display name%&8: &a%message%" to loop-players
+			else if {chatcolor.type::%player%} is "gold":
+				send "&r%player's display name%&8: &6%message%" to loop-players
+			else:
+				send "&r%player's display name%&8: &f%message%" to loop-players
+	if {globalmute} is true:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			loop all players:
+				if {chatcolor.type::%player%} is "red":
+					send "&r%player's display name%&8: &c%message%" to loop-players
+				else if {chatcolor.type::%player%} is "blue":
+					send "&r%player's display name%&8: &b%message%" to loop-players
+				else if {chatcolor.type::%player%} is "green":
+					send "&r%player's display name%&8: &a%message%" to loop-players
+				else if {chatcolor.type::%player%} is "gold":
+					send "&r%player's display name%&8: &6%message%" to loop-players
+				else:
+					send "&r%player's display name%&8: &f%message%" to loop-players
+		else:
+			send "{@p} &fGlobalMute enabled if you don't have permission you can't write message&8."
+			
+on death:
+	set death message to ""	
+	add 1 to {stats.kills::%attacker%}
+	add 1 to {stats.deaths::%victim%}
+	message "{@p} &fYou have been killed by %attacker's display name% &8&l» &c%attacker's health% &4❤" to victim
+on respawn:
+	if {server::%player%} is "ffa":
+		clear player's inventory
+		teleport player to {spawn.ffa}
+		equip player with all iron armor
+		set slot 0 of player to iron sword named "&cSword"
+		wait 5 ticks
+		set slot 1 of player to flint and steel named "&aFNS"
+		wait 5 ticks
+		set slot 2 of player to fishing rod named "&eFishing Rod"
+		wait 5 ticks
+		set slot 3 of player to bow named "&3Bow"
+		wait 5 ticks
+		set slot 9 of player to 10 of arrow named "&7Arrow"
+		wait 5 ticks
+		set slot 8 of player to clock named "&6&lServer Selector"
+	if {server::%player%} is "uhcffa":
+		clear player's inventory
+		equip player with all diamond armour
+		enchant the player's chestplate with protection 2
+		enchant the player's boots with protection 2
+		enchant the player's helmet with protection 2
+		set slot 0 of player's inventory to diamond sword of sharpness 3
+		set slot 1 of player's inventory to lava bucket
+		set slot 2 of player's inventory to fishing rod
+		set slot 3 of player's inventory to bow of power 3
+		set slot 4 of player's inventory to 10 golden apple
+		set slot 5 of player's inventory to 4 golden apple named "&6Golden Head" 
+		set slot 6 of player's inventory to 32 cooked beef
+		set slot 7 of player's inventory to 64 cobblestone	
+		set slot 8 of player's inventory to water bucket
+		set slot 9 of player's inventory to 14 arrow
+		set slot 17 of player's inventory to crafting table
+		set slot 18 of player's inventory to 14 arrow
+		set slot 27 of player's inventory to 14 arrow
+		set slot 35 of player's inventory to water bucket
+		set slot 34 of player's inventory to diamond pickaxe
+		give 1 clock named "&6&lServer Selector" to player
+		set {_tp} to random element out of {uhcregion::*}
+		teleport player to {regions.%{_tp}%}
+on quit:
+	set quit message to ""
+	broadcast "{@p} &r%player's display name% &fleft from the server&8."
+	if {server::%player%} is "ffa":
+		remove 1 from {ffalimit}
+	else:
+		remove 1 from {uhcffalimit}
+	set {stats.lastlogout::%player%} to now
+	
+command /statsreset [<offlineplayer>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			if arg 1 is set:
+				remove {stats.kills::%arg 1%} from {stats.kills::%arg 1%}
+				remove {stats.deaths::%arg 1%} from {stats.deaths::%arg 1%}
+				send "{@p} &fYou're succesfully resetted &c%arg 1%&8'&fs stats&8."
+			else:
+				send "{@p} &fUsage: &6/statsreset <PlayerName>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+command /stats [<offlineplayer>]:
+	trigger:
+		if arg 1 is not set:
+			set {_kdr} to {stats.kills::%player%}/{stats.deaths::%player%}
+			send "{@p} &fKills&8: &a%{stats.kills::%player%}%" 
+			send "{@p} &fDeaths&8: &c%{stats.deaths::%player%}%" 
+			send "{@p} &fKDR: &e%{_kdr}%" 
+			if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+				send "{@p} &fLastLogin&8: &b%{stats.lastlogin::%player%}%"
+				send "{@p} &fLastLogout&8: &b%{stats.lastlogout::%player%}%"
+			else:
+				send "{@p} &cYou don't have this permission&8."
+		else:
+			set {_kdr} to {stats.kills::%arg 1%}/{stats.deaths::%arg 1%}
+			send "{@p} &fKills&8: &a%{stats.kills::%arg 1%}%" 
+			send "{@p} &fDeaths&8: &c%{stats.deaths::%arg 1%}%" 
+			send "{@p} &fKDR: &e%{_kdr}%" 
+			if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+				if arg 1 is online:
+					send "{@p} &fOnline Check&8: &aONLINE"
+				else:
+					send "{@p} &fOnline Check&8: &cOFFLINE"
+				send "{@p} &fLastLogin&8: &b%{stats.lastlogin::%arg 1%}%"
+				send "{@p} &fLastLogout&8: &b%{stats.lastlogout::%arg 1%}%"
+			else:
+				send "{@p} &cYou don't have this permission&8."
+					
+command /chatcolor [<text>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum" or "platinum" or "diamond":
+			if arg 1 is set:
+				if arg 1 is "gold":
+					set {chatcolor.type::%player%} to "gold"
+					send "{@p} &fYou can write message like this &6message"
+				if arg 1 is "red":
+					set {chatcolor.type::%player%} to "red"
+					send "{@p} &fYou can write message like this &cmessage"
+				if arg 1 is "blue":
+					if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum" or "diamond":
+						set {chatcolor.type::%player%} to "blue"
+						send "{@p} &fYou can write message like this &bmessage"
+				if arg 1 is "green":
+					if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum":
+						set {chatcolor.type::%player%} to "green"
+						send "{@p} &fYou can write message like this &amessage"
+			else:
+				if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "moderator" or "trial-moderator" or "developer" or "mapmaker" or "quantum":
+					send "{@p} &fUsage: &a/chatcolor &cred&8/&bblue&8/&agreen&8/&6gold"
+				else if {rank::%player%} is "platinum":
+					send "{@p} &fUsage: &a/chatcolor &bblue&8/&6gold&8/&cred"
+				else if {rank::%player%} is "diamond":
+					send "{@p} &fUsage: &a/chatcolor &6gold&8/&cred"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+					
+On Hunger Meter Change:	
+	set the player's food level to 10
+	
+on weather change:
+	cancel event
+	
+on command:
+	command is "/?"
+	cancel event
+	execute player command "/help"
+	
+on command:
+	command is "pl"
+	cancel event
+	send "&fPlugins (3): &aXeon&f, &aGroupManager&f, &aSkript&f,"
+	
+on command:
+	command is "plugins"
+	cancel event
+	send "&fPlugins (3): &aXeon&f, &aGroupManager&f, &aSkript&f,"
+	
+on command:
+	command is "bukkit:pl"
+	cancel event
+	send "&fPlugins (3): &aXeon&f, &aGroupManager&f, &aSkript&f,"
+	
+on command:
+	command is "bukkit:plugins"
+	cancel event
+	send "&fPlugins (3): &aXeon&f, &aGroupManager&f, &aSkript&f,"
+	
+command /about:
+	aliases: /bukkit:about
+	trigger:
+		send "{@p} &fHello you can call me &3Xeon"
+		send "{@p} &fI'm developed by &c&lH&6&ly&e&lp&a&le&b&lr&9&lV&5&le&c&ln&6&lo&e&lx&8."
+		send "{@p} &fHave fun&8."
+
+on command "/bukkit:reload":
+	cancel event
+	
+on command "/bukkit:rl":
+	cancel event
+	
+on command "/bukkit:timings":
+	cancel event
+
+on command "/bukkit:version":
+	cancel event
+	
+on weather change to rain or thunder:
+	cancel event
+	
+on command:
+	command is "bukkit:about"
+	cancel event
+	
+on command:
+	command is "me"
+	cancel event
+	
+on command:
+	command is "bukkit:me"
+	cancel event
+	
+on command:
+	command is "tell"
+	cancel event
+	
+on command:
+	command is "bukkit:tell"
+	cancel event
+	
+on command:
+	command is "bukkit:help"
+	cancel event
+	execute player command "/help"
+	
+on command:
+	command is "?"
+	cancel event
+	execute player command "/help"
+	
+on command:
+	command is "bukkit:?"
+	cancel event
+	execute player command "/help"
+	
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air
+on place:
+	if {server::%player%} is "uhcffa":
+		wait 100 tick
+		set event-block to air	
+	
+on place:
+    if player is holding a flint and steel:
+        event-block is fire
+        wait 4 seconds
+        set event-block to air
+		
+On place of fire:
+    damage player's tool by 15
+	
+on projectile hit:
+    projectile is arrow
+    delete projectile	
+	
+command /kill [<player>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator":
+			if arg 1 is online:
+				kill arg 1
+				send "{@p} &fYou killed &c%arg 1%"
+			else:
+				kill player
+		else:
+			send "{@p} &cYou don't have this permission&8."
+			
+command /heal [<player>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator":
+			if arg 1 is online:
+				heal arg 1
+				set the arg 1's food level to 20
+				send "{@p} &fYour health and food level fulled"
+			else:
+				heal player
+				set the player's food level to 20
+		else:
+			send "{@p} &cYou don't have this permission&8."
+				
+command /ping:
+	trigger:
+		send "{@p} &fYour ping&8: &c%player's ping%"
+				
+command /tp [<player>] [<player>]:
+	aliases: /teleport
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			if arg 1 is set:
+				if arg 2 is not set:
+					teleport player to arg 1
+					send "{@p} &fYou're teleporting to &a%arg 1%"
+				else:
+					teleport arg 1 to arg 2
+					send "{@p} &fYou're teleported &a%arg 1% &fto &b%arg 2%"
+			else:
+				send "{@p} &fUsage&8: &a/teleport <Player1> <Player2>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+			
+command /vanish:
+	aliases: /v
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			if {vanish::%player%} is false:
+				hide the player from all players
+				send "{@p} &fYou vanished&8."
+				set {vanish::%player%} to true
+			else if {vanish::%player%} is not set:
+				hide the player from all players
+				send "{@p} &fYou vanished&8."
+				set {vanish::%player%} to true
+			else:
+				reveal the player from all players
+				send "{@p} &fyou're no longer on vanish mode"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+				
+command /chatclear:
+	aliases: /ss
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			loop 150 times:
+				broadcast ""
+			broadcast "{@p} &fChat cleared by &r%player%"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+		
+command /fix:
+	aliases: /ghost , /gf , /debug
+	trigger:
+		teleport player to player
+		wait 0.50 ticks
+		hide all players from player
+		hide player from all players
+		wait 0.50 ticks
+		reveal all players to player
+		reveal player to all players	
+		message "{@p} &fThe server has attempted to de-ghost you."
+		
+on load:
+	wait 5 seconds
+	loop all players:
+		if {rank::%loop-player%} is "owner" or "admin" or "sr.moderator" or "trial-sr.moderator":
+			send "{@p} &aSkript systems reloaded&8." to loop-players
+			
+command /gamemode [<text>] [<player>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "developer" or "sr.moderator" or "trial-sr.moderator" or "trial-moderator" or "moderator":
+			if arg 1 is set:
+				if arg 2 is not set:
+					if arg 1 is "1":
+						set player's gamemode to creative
+						send "{@p} &fYour gamemode changed to &bCREATIVE"
+					if arg 1 is "0":
+						set player's gamemode to survival
+						send "{@p} &fYour gamemode changed to &2SURVIVAL"
+					if arg 1 is "2": 
+						set player's gamemode to adventure
+						send "{@p} &fYour gamemode changed to &aADVENTURE"
+				else:
+					if arg 2 is online:
+						if arg 1 is "1":
+							set arg 2's gamemode to creative
+							send "{@p} &fYour gamemode changed to &bCREATIVE" to arg 2
+							send "{@p} &c%arg 2%&8'&f's gamemode changed&8."
+						if arg 1 is "0":
+							set arg 2's gamemode to survival
+							send "{@p} &fYour gamemode changed to &2SURVIVAL" to arg 2
+							send "{@p} &c%arg 2%&8'&f's gamemode changed&8."
+						if arg 1 is "2": 
+							set arg 2's gamemode to adventure
+							send "{@p} &fYour gamemode changed to &aADVENTURE" to arg 2
+							send "{@p} &c%arg 2%&8'&f's gamemode changed&8."
+					else:
+						send "{@p} &fPlayer is not online&8."
+			else:
+				send "{@p} &fUsage&8: &a/gamemode <mode> <player>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+			
+command /setserver [<text>] [<text>]:
+	trigger:
+		if {rank::%player%} is "owner" or "admin" or "developer":
+			if arg 1 is set:
+				if arg 2 is not set:
+					if arg 1 is "ffa":
+						set {spawn.ffa} to player's location
+						send "{@p} &fYou succesfully located &bFFA&8'&fs spawn&8."
+					if arg 1 is  "list":
+						send "{@p} &fList of arenas&8: &c%{uhcregion::*}%"
+				else:
+					if arg 1 is "uhcffa":
+						if arg 2 is not "loc1" or "loc2":
+							if {regions.%arg 2%} is not set:
+								set {regions.%arg 2%} to player's location
+								add arg 2 to {uhcregion::*}
+								send "{@p} &c%arg 2% &fSuccesfuly add to UHC Regions&8."
+							else:
+								set {regions.%arg 2%} to player's location
+								send "{@p} &c%arg 2%&f's location changed&8."
+						if arg 2 is "loc1":
+							set {uhc.arena.loc1} to player's location
+							send "{@p} &fSuccesfuly you located &cArena Loc1"
+						if arg 2 is "loc2":
+							set {uhc.arena.loc2} to player's location
+							send "{@p} &fSuccesfuly you located &cArena Loc2"
+					if arg 1 is "remove":
+						if arg 2 is set:
+							remove arg 2 from {uhcregion::*}
+							send "{@p} &c%arg 2% &fRemoved from UHC Regions&8."
+			else:
+				send "{@p} &fUsage&8: &6/setserver <ffa/uhcffa/list/remove> if arg 2 is uhc ffa <1/2/3.. or loc1/loc2>"
+		else:
+			send "{@p} &cYou don't have this permission&8."
+
+							
+command /server [<text>]:
+	trigger:
+		if arg 1 is set:
+			if arg 1 is "ffa":
+				if {server::%player%} is "uhcffa":
+					if {spawn.ffa} is set:
+						remove 1 from {uhcffalimit}
+						add 1 to {ffalimit}
+						set {server::%player%} to "ffa"
+						clear player's inventory
+						teleport player to {spawn.ffa}
+						equip player with all iron armor
+						set slot 0 of player to iron sword named "&cSword"
+						wait 5 ticks
+						set slot 1 of player to flint and steel named "&aFNS"
+						wait 5 ticks
+						set slot 2 of player to fishing rod named "&eFishing Rod"
+						wait 5 ticks
+						set slot 3 of player to bow named "&3Bow"
+						wait 5 ticks
+						set slot 9 of player to 10 of arrow named "&7Arrow"
+						wait 5 ticks
+						set slot 8 of player to clock named "&6&lServer Selector"
+						wait 5 ticks
+						send "{@p} &fWelcome to ffa sir&8."
+					else:
+						send "{@p} &fPlease decide to spawn's locate"
+				else:
+					send "{@p} &fYou're already in &bFFA"
+			if arg 1 is "uhcffa":
+				if {server::%player%} is "ffa":
+					remove 1 from {ffalimit}
+					add 1 to {uhcffalimit}
+					set {server::%player%} to "uhcffa"
+					clear player's inventory
+					equip player with all diamond armour
+					enchant the player's chestplate with protection 2
+					enchant the player's boots with protection 2
+					enchant the player's helmet with protection 2
+					set slot 0 of player's inventory to diamond sword of sharpness 3
+					set slot 1 of player's inventory to lava bucket
+					set slot 2 of player's inventory to fishing rod
+					set slot 3 of player's inventory to bow of power 3
+					set slot 4 of player's inventory to 10 golden apple
+					set slot 5 of player's inventory to 4 golden apple named "&6Golden Head" 
+					set slot 6 of player's inventory to 32 cooked beef
+					set slot 7 of player's inventory to 64 cobblestone	
+					set slot 8 of player's inventory to water bucket
+					set slot 9 of player's inventory to 14 arrow
+					set slot 17 of player's inventory to crafting table
+					set slot 18 of player's inventory to 14 arrow
+					set slot 27 of player's inventory to 14 arrow
+					set slot 35 of player's inventory to water bucket
+					set slot 34 of player's inventory to diamond pickaxe
+					give 1 clock named "&6&lServer Selector" to player
+					set {_tp} to random element out of {uhcregion::*}
+					teleport player to {regions.%{_tp}%}
+				else:
+					send "{@p} &fYou're already in &6UHC FFA"
+							
+every 1 minutes:
+	loop blocks within {uhc.arena.loc1} to {uhc.arena.loc2}:
+		if loop-block is lava:
+			set loop-block to air
+		if loop-block is water:
+			set loop-block to air
+		if loop-block is cobblestone:
+			set loop-block to air
+		if loop-block is planks:
+			set loop-blocks to air
+		if loop-block is obsidian:
+			set loop-blocks to air
+		if loop-block is stone:
+			set loop-blocks to air
+		if loop-block is crafting table:
+			set loop-blocks to air					
+					
