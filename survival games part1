@@ -1,0 +1,62 @@
+options:
+	p: &8[&aSurvivalGames&8]
+	perm: survivalgames.admin
+	pmessage: &cYou Don't have this permission&8!
+	h: ###
+command /survivalgames [<text>] [<text>] [<text>]:
+	permission: {@perm}
+	permission message: {@pmessage}
+	aliases: /sgarena
+	trigger:
+		if arg 1 is not set:
+			if arg 2 is not set:
+				if arg 3 is not set:
+					send "{@p} &fUsage&8: &a/survivalgames [<{@h}ArenaName or list or delete>] [<remove/add/lobby/deathmatch>] [<{@h}Number>]"
+		if arg 1 is set:
+			if arg 1 is "list":
+				send "{@p} &fList of arenas&8;"
+				loop {sgarena::*}:
+					send "{@p} &a%loop-index%&8- &f%loop-value%"
+			if arg 2 is not set:
+				if arg 3 is not set:
+					if arg 1 is not "list" or "delete":
+						if {sgarena::%arg 1%} is not set:
+							set {sgarena::%arg 1%} to arg 1
+							send "{@p} &fSuccesfully you added arena to SG arenas&8."
+						else:
+							send "{@p} &cAlready this arena added to SG arenas&8."
+			if arg 2 is set:
+				if arg 1 is "delete":
+					if {sgarena::%arg 2%} is set:
+						clear {sgarena::%arg 2%}
+						clear {arena.locations::%arg 2%}
+						clear {arena.spawnlocation.%arg 2%::*}
+						clear {sg.%arg 2%.lobby}
+						clear {sg.deathmatchloc.1::%arg 2%}
+						clear {sg.deathmatchloc.2::%arg 2%}
+						clear {sg.deathmatchloc.3::%arg 2%}
+				if arg 3 is set:
+					if {sgarena::%arg 1%} is set:
+						if arg 2 is "add":
+							add 1 to {arena.locations::%arg 1%}
+							set {arena.spawnlocation.%arg 1%::%arg 3%} to player's location
+							send "{@p} &fYou added &b%arg 3% &fto &c%arg 1% &farena's locations&8."
+						if arg 2 is "remove":
+							remove 1 from {arena.locations::%arg 1%}
+							clear {arena.spawnlocation.%arg 3%}
+							send "{@p} &fYou removed &c%arg 1% &flocation from arena"
+						if arg 2 is "lobby":
+							set {sg.%arg 1%.lobby} to player's location
+							send "{@p} &fYou have been located &c%arg 1%&f's lobby&8."
+						if arg 2 is "deathmatch":
+							if arg 3 is "1":
+								set {sg.deathmatchloc.1::%arg 1%} to player's location
+								send "{@p} &fYou have been located first location&8."
+							if arg 3 is "2":
+								set {sg.deathmatchloc.2::%arg 1%} to player's location
+								send "{@p} &fYou have been located first location&8."
+							if arg 3 is "3":
+								set {sg.deathmatchloc.2::%arg 1%} to player's location
+								send "{@p} &fYou have been located first location&8."
+							else:
+								send "{@p} &fUsage&8: &a/survivalgames <{@h}ArenaName> <Deathmatch> <1/2/3>"
